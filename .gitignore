@@ -1,0 +1,24 @@
+# dependencies
+node_modules/
+
+# next.js build output
+.next/
+out/
+
+# log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# local env files
+.env*
+!.env.example
+
+# editor directories and system files
+.vscode/
+.idea/
+.DS_Store
+
+#backend
+backend/ml_pipeline/data_collection/f1_data_cache
