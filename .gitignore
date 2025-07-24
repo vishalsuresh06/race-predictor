@@ -22,3 +22,6 @@ pnpm-debug.log*
 
 #backend
 backend/ml_pipeline/data_collection/f1_data_cache
+__pycache__/
+backend/database/f1_data.db
+venv/
