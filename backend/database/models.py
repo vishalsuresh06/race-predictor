@@ -122,7 +122,7 @@ class SessionStatusData(Base):
     event_name = Column(String)
     round_number = Column(Integer)
     session = Column(String)
-    time = Column(Interval)
+    time = Column(Float)
     status = Column(String)
 
 class TrackStatusData(Base):
@@ -133,7 +133,7 @@ class TrackStatusData(Base):
     event_name = Column(String)
     round_number = Column(Integer)
     session = Column(String)
-    time = Column(Interval)
+    time = Column(Float)
     status = Column(String)
     message = Column(String)
 
@@ -145,7 +145,16 @@ class RaceControlData(Base):
     event_name = Column(String)
     round_number = Column(Integer)
     session = Column(String)
-    time = Column(DateTime(timezone=True), server_default=func.now())
+    time = Column(Float)
+    category = Column(String)
+    message = Column(String)
+    # New columns added for additional
+    status = Column(String)
+    flag = Column(String)
+    scope = Column(String)
+    sector = Column(Integer)
+    racing_number = Column(String)
+    lap = Column(Integer)
 
 
 Base.metadata.create_all(engine)

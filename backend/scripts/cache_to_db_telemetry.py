@@ -3,10 +3,9 @@ from backend.database.models import TelemetryData
 from tqdm import tqdm
 
 def get_telemetry_data(year, event_name, round_number, session, session_data, db_session):
-    telemetry_data = session_data.telemetry_data
     telemetry_rows = []
 
-    drivers = set(session_data.car_data.keys() + session_data.pos_data.keys())
+    drivers = set(session_data.car_data.keys()) & set(session_data.pos_data.keys())  # only those with both
 
     for driver in drivers:
         car_data = session_data.car_data[driver]

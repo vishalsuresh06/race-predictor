@@ -6,12 +6,13 @@ import time
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from backend.scripts.cache_to_db_session_status import get_session_status_data
 from backend.scripts.cache_to_db_weather import get_weather_data
-from backend.scripts.cache_to_db_results import get_results_data
 from backend.scripts.cache_to_db_laps import get_laps_data
 from backend.scripts.cache_to_db_telemetry import get_telemetry_data
-
-from backend.database.models import WeatherData, TelemetryData, LapData, ResultsData, SessionStatusData, TrackStatusData, RaceControlData
+from backend.scripts.cache_to_db_results import get_results_data
+from backend.scripts.cache_to_db_track_status import get_track_status_data
+from backend.scripts.cache_to_db_rc_messages import get_rc_messages_data
 
 def main():
     engine = create_engine('sqlite:///backend/database/f1_data.db')
@@ -51,27 +52,24 @@ def main():
         # Create a single progress bar for sessions that gets updated
         with tqdm(SESSIONS, desc=f"Sessions in {event['EventName']}", position=1, leave=False) as session_pbar:
             for session in session_pbar:
-                try:
-                    # Update the progress bar description to show current session
-                    session_pbar.set_description(f"Processing {event['EventName']} - {session}")
+                # Update the progress bar description to show current session
+                session_pbar.set_description(f"Processing {event['EventName']} - {session}")
                     
-                    #Load session data
-                    session_data = fastf1.get_session(YEAR, str(event['RoundNumber']), session)
-                    session_data.load(telemetry=True, weather=True, laps=True, messages=True)
+                #Load session data
+                session_data = fastf1.get_session(YEAR, str(event['RoundNumber']), session)
+                session_data.load(telemetry=True, weather=True, laps=True, messages=True)
                     
-                    get_weather_data(YEAR, event['EventName'], event['RoundNumber'], session, session_data, db_session)
-                    get_results_data(YEAR, event['EventName'], event['RoundNumber'], session, session_data, db_session)
-                    get_laps_data(YEAR, event['EventName'], event['RoundNumber'], session, session_data, db_session)
-                    get_telemetry_data(YEAR, event['EventName'], event['RoundNumber'], session, session_data, db_session)
+                get_weather_data(YEAR, event['EventName'], event['RoundNumber'], session, session_data, db_session)
+                get_telemetry_data(YEAR, event['EventName'], event['RoundNumber'], session, session_data, db_session)
+                get_laps_data(YEAR, event['EventName'], event['RoundNumber'], session, session_data, db_session)
+                get_results_data(YEAR, event['EventName'], event['RoundNumber'], session, session_data, db_session)
+                get_session_status_data(YEAR, event['EventName'], event['RoundNumber'], session, session_data, db_session)
+                get_track_status_data(YEAR, event['EventName'], event['RoundNumber'], session, session_data, db_session)
+                get_rc_messages_data(YEAR, event['EventName'], event['RoundNumber'], session, session_data, db_session)
 
-                    # Update description to show completion
-                    session_pbar.set_description(f"✓ {event['EventName']} - {session}")
-                    successful_sessions += 1
-                except Exception as e:
-                    session_pbar.set_description(f"✗ {event['EventName']} - {session}")
-                    tqdm.write(f"[ERROR] {event['EventName']} - {session}: {type(e).__name__}: {e}")
-                    failed_sessions += 1
-                    continue
+                # Update description to show completion
+                session_pbar.set_description(f"✓ {event['EventName']} - {session}")
+                successful_sessions += 1
         break
 
     # Print summary
