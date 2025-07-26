@@ -96,6 +96,8 @@ def main():
                     get_rc_messages_data(YEAR, event['EventName'], event['RoundNumber'], session, session_data, db_session)
                     tqdm.write("=" * 50)
 
+                    db_session.commit()  # Commit all changes at once
+
                     # Update description to show completion
                     session_pbar.set_description(f"✓ {event['EventName']} - {session}")
                     successful_sessions += 1
